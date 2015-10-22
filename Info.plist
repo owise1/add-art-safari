@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>@owise1</string>
+	<key>Builder Version</key>
+	<string>10601.2.7.2</string>
+	<key>CFBundleDisplayName</key>
+	<string>Add-Art</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.add-art</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1</string>
+	<key>CFBundleVersion</key>
+	<string>1445545773</string>
+	<key>Chrome</key>
+	<dict>
+		<key>Database Quota</key>
+		<real>104857600</real>
+		<key>Global Page</key>
+		<string>uBlock/background.html</string>
+		<key>Popovers</key>
+		<array>
+			<dict>
+				<key>Filename</key>
+				<string>interface.html</string>
+				<key>Identifier</key>
+				<string>popover</string>
+			</dict>
+		</array>
+		<key>Toolbar Items</key>
+		<array>
+			<dict>
+				<key>Identifier</key>
+				<string>toolbarItem</string>
+				<key>Image</key>
+				<string>images/icon-16.png</string>
+				<key>Label</key>
+				<string>Add-Art</string>
+				<key>Palette Label</key>
+				<string>Add-Art</string>
+				<key>Popover</key>
+				<string>popover</string>
+				<key>Tool Tip</key>
+				<string>Add-Art 0.1</string>
+			</dict>
+		</array>
+	</dict>
+	<key>Content</key>
+	<dict>
+		<key>Scripts</key>
+		<dict>
+			<key>End</key>
+			<array>
+        <string>js/lib/q.js</string>
+        <string>js/lib/localforage.min.js</string>
+        <string>js/helpers.js</string>
+        <string>js/artAdder.js</string>
+				<string>uBlock/js/contentscript-end.js</string>
+			</array>
+			<key>Start</key>
+			<array>
+				<string>uBlock/js/vapi-client.js</string>
+				<string>uBlock/js/contentscript-start.js</string>
+			</array>
+		</dict>
+		<key>Whitelist</key>
+		<array>
+			<string>http://*/*</string>
+			<string>https://*/*</string>
+		</array>
+	</dict>
+	<key>Description</key>
+	<string>Replacing ads with art.</string>
+	<key>DeveloperIdentifier</key>
+	<string>0000000000</string>
+	<key>ExtensionInfoDictionaryVersion</key>
+	<string>1.0</string>
+	<key>Permissions</key>
+	<dict>
+		<key>Website Access</key>
+		<dict>
+			<key>Include Secure Pages</key>
+			<true/>
+			<key>Level</key>
+			<string>All</string>
+		</dict>
+	</dict>
+	<key>Update Manifest URL</key>
+	<string>https://www.ublock.org/Update.plist</string>
+	<key>Website</key>
+	<string>https://add-art.org/</string>
+</dict>
+</plist>
