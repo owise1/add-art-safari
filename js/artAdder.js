@@ -21,11 +21,11 @@
       return self.indexOf(value) === index;
   }
 
-  var currentExhibition;
 
 
   var artAdder = {
     processAdNode : function (elem) {
+      artAdder.getExhibition() // start pulling the exhibition out of storage
 
       if (elem.offsetWidth < 2) return
       if (elem.offsetHeight < 2) return
@@ -116,20 +116,40 @@
         return items[0]
       })
     },
+    currentExhibition : false,
     setExhibition : function (exhibition) {
-      currentExhibition = Q(exhibition)
-        console.log(exhibition)
+      artAdder.currentExhibition = Q(exhibition)
       return artAdder.localSet('exhibition', exhibition)
     },
     getExhibition : function () {
-      if (currentExhibition) return currentExhibition
+      if (artAdder.currentExhibition) return artAdder.currentExhibition
       var d = Q.defer()
-      artAdder.localGet('exhibition')
+      var exhibitionData
+      // this process works differently in chrome and safari
+      // in chrome we have access to a shared data store
+      if (typeof chrome !== 'undefined') {
+        exhibitionData = artAdder.localGet('exhibition')
+      // in safari we need to pass the exhibtion
+      // through messages
+      } else if (typeof safari !== 'undefined') {
+        exhibitionData = (function(){
+          var d2 = Q.defer()
+          var messager = vAPI.messaging.channel('contentscript-end.js');
+          messager.send({
+            what : 'getExhibition'
+          }, function (res) {
+            if (res) d2.resolve(res)
+          })
+          return d2.promise
+        })();
+      }
+
+      exhibitionData 
       .then(function (exhibition) {
         if (!exhibition) {
           d.resolve(false)
         } else {
-          currentExhibition = Q(exhibition.exhibition)
+          artAdder.currentExhibition = Q(exhibition.exhibition)
           d.resolve(exhibition.exhibition)
         }
       })

@@ -483,6 +483,8 @@ var filterRequests = function(pageStore, details) {
 };
 
 /******************************************************************************/
+var currentExhibition = false
+var exhibitionPromise = false 
 
 var onMessage = function(request, sender, callback) {
     // Async
@@ -519,6 +521,16 @@ var onMessage = function(request, sender, callback) {
             if(!response.shutdown) {
                 response.result = filterRequests(pageStore, request);
             }
+            break;
+
+        case 'getExhibition' :
+            if (vAPI.artAdder && !exhibitionPromise) {
+              exhibitionPromise = vAPI.artAdder.localGet('exhibition')
+              .then(function (exhibition) {
+                currentExhibition = exhibition
+              })
+            }
+            response = currentExhibition
             break;
 
         default:

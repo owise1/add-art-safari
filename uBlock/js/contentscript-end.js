@@ -464,11 +464,10 @@ var uBlockCollapser = (function() {
           while ( i-- ) {
               //elems[i].style.setProperty('display', 'none', 'important');
               vAPI.artAdder.processAdNode(elems[i])
-                console.log(elems[i])
           }
         }
         process()
-        setTimeout(process, 500) // check again in a half sec to catch slow ones
+        //setTimeout(process, 500) // check again in a half sec to catch slow ones
     };
 
     // Extract and return the staged nodes which (may) match the selectors.

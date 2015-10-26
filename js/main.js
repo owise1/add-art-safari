@@ -22,15 +22,17 @@ if (typeof chrome !== 'undefined') {
 function init(event) {
 
   syncDefaultList()
-  .then(vAPI.artAdder.getExhibition) // have we chosen a show?
+  .then(function () { return vAPI.artAdder.localGet('exhibition') }) // have we chosen a show?
   .then(function (exhibition) {
     // no
-    if (!exhibition) {
+    if (!exhibition || !exhibition.exhibition) {
       vAPI.artAdder.localGet('defaultShowData')
       .then(function (feeds) {
         var rand = feeds.defaultShowData[Math.floor(feeds.defaultShowData.length * Math.random())].title
         vAPI.artAdder.exhibition(rand)
       })
+    } else {
+      vAPI.artAdder.currentExhibition = exhibition
     }
   })
 }
