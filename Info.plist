@@ -37,7 +37,7 @@
 				<key>Identifier</key>
 				<string>toolbarItem</string>
 				<key>Image</key>
-				<string>images/icon-16.png</string>
+				<string>images/icon-16-trans.png</string>
 				<key>Label</key>
 				<string>Add-Art</string>
 				<key>Palette Label</key>
@@ -85,8 +85,6 @@
 			<string>All</string>
 		</dict>
 	</dict>
-	<key>Update Manifest URL</key>
-	<string>https://www.ublock.org/Update.plist</string>
 	<key>Website</key>
 	<string>https://add-art.org/</string>
 </dict>
