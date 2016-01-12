@@ -9,5 +9,3 @@ We'd love for you to help with this.
 [1]: http://visitsteve.com
 [2]: http://github.com/slambert/add-art
 [3]: https://github.com/coreytegeler/Add-Art-chrome
-[4]: https://github.com/owise1/uBlock 
-[5]: https://www.ublock.org/ 

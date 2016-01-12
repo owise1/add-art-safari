@@ -25,7 +25,6 @@
 
   var artAdder = {
     processAdNode : function (elem) {
-      artAdder.getExhibition() // start pulling the exhibition out of storage
 
       if (elem.offsetWidth < 2) return
       if (elem.offsetHeight < 2) return
@@ -59,7 +58,7 @@
       var that = artAdder 
       artAdder.fetchExhibition(name)
       .then(function (info) {
-        zip.workerScriptsPath = '../js/lib/zip/'
+        zip.workerScriptsPath = 'js/lib/'
         zip.createReader(new zip.HttpReader(info.images), function(reader) {
 
           // get all entries from the zip
@@ -255,5 +254,3 @@
   else window.artAdder = artAdder
   
 })();
-
-

@@ -4,7 +4,6 @@ if (typeof chrome !== 'undefined') {
 
 artAdder.localGet('defaultShowData')
 .then(function (object) {
-  console.log(object)
   insertSources(object['defaultShowData']);
 })
 
@@ -13,9 +12,10 @@ var currentExhibition
 
 var sources = [];
 function insertSources(shows) {
-  artAdder.getExhibition()
+  artAdder.localGet('exhibition')
   .then(function (exhibition) {
-    currentExhibition = exhibition
+    currentExhibition = exhibition.exhibition
+      console.log(exhibition)
     for(var i=0; i<shows.length; i++) {
       sources.push(shows[i]);
       if(sources.length == shows.length) {

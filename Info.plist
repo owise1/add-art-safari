@@ -21,7 +21,7 @@
 		<key>Database Quota</key>
 		<real>104857600</real>
 		<key>Global Page</key>
-		<string>uBlock/background.html</string>
+		<string>background.html</string>
 		<key>Popovers</key>
 		<array>
 			<dict>
@@ -58,13 +58,9 @@
 				<string>js/lib/q.js</string>
 				<string>js/lib/localforage.min.js</string>
 				<string>js/helpers.js</string>
+				<string>js/lib/jquery-1.11.2.min.js</string>
 				<string>js/artAdder.js</string>
-				<string>uBlock/js/contentscript-end.js</string>
-			</array>
-			<key>Start</key>
-			<array>
-				<string>uBlock/js/vapi-client.js</string>
-				<string>uBlock/js/contentscript-start.js</string>
+				<string>js/content-end.js</string>
 			</array>
 		</dict>
 		<key>Whitelist</key>
