@@ -2,7 +2,7 @@ if (typeof chrome !== 'undefined') {
   var port = chrome.extension.connect({ name : 'popup' })
 }
 
-artAdder.localGet('defaultShowData')
+safari.extension.globalPage.contentWindow.artAdder.localGet('defaultShowData')
 .then(function (object) {
   insertSources(object['defaultShowData']);
 })
@@ -15,7 +15,6 @@ function insertSources(shows) {
   artAdder.localGet('exhibition')
   .then(function (exhibition) {
     currentExhibition = exhibition.exhibition
-      console.log(exhibition)
     for(var i=0; i<shows.length; i++) {
       sources.push(shows[i]);
       if(sources.length == shows.length) {
@@ -67,7 +66,7 @@ function addModules(show, i) {
 	$square.click(function() {
 		var title = $(this).attr('data-title');
 		$('header#top #close').addClass('visible');
-		$('.infoPage[data-title="' + title + '"').addClass('opened');
+		$('.infoPage[data-title="' + title + '"]').addClass('opened');
 	});
 
 	var $infoPage = $('.infoPage').eq(i);
@@ -79,12 +78,21 @@ function addModules(show, i) {
 
 	$selectBtn = $infoPage.children('.selectSource');
 	$selectBtn.attr('data-show', show.title);
-	$selectBtn.click(event, selectSource);
-}
-
-function selectSource(event) {
-	var selectedSource = $(event.currentTarget).attr('data-show');
-
-  port.postMessage({ msg : { what : 'exhibition', exhibition : selectedSource }})
-  self.close()
+	$selectBtn.click(event, function (event){
+    var selectedSource = $(event.currentTarget).attr('data-show')
+    var $txt = $(this).find('.add-txt').text('Downloading ...')
+    var interv = false
+    safari.extension.globalPage.contentWindow.artAdder.exhibition(selectedSource, function (progress){
+      $txt.text('Downloading: ' + progress + '% complete')
+      if (interv) clearInterval(interv)
+      if (progress === 100) {
+        window.location.reload()
+      } else {
+        // fake progress
+        interv = setInterval(function (){
+          $txt.text('Downloading: ' + (progress++) + '% complete')
+        }, 500)
+      }
+    })
+  })
 }

@@ -54,16 +54,27 @@
       return true
     },
     // download exhibition and store it
-    exhibition : function (name) {
+    exhibition : function (name, onProgress) {
       var that = artAdder 
+      if (onProgress) {
+        onProgress(10)
+      }
       artAdder.fetchExhibition(name)
       .then(function (info) {
+        console.log(info)
+        if (onProgress) {
+          onProgress(35)
+        }
         zip.workerScriptsPath = 'js/lib/'
         zip.createReader(new zip.HttpReader(info.images), function(reader) {
+          console.log('here')
 
           // get all entries from the zip
           reader.getEntries(function(entries) {
             if (entries.length) {
+              if (onProgress) {
+                onProgress(85)
+              }
 
               var imgEntries = entries
                 .filter(function (entry) {
@@ -99,6 +110,9 @@
                    entries : finalEntries
                  }
                  that.setExhibition(exhibition)
+                 if (onProgress) {
+                   onProgress(100)
+                 }
                })
                .done()
             }
