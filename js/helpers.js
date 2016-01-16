@@ -9,11 +9,13 @@ function cleanDate(date) {
 }
 
 function stripHTML(html) {
-    return html.replace(/<\/?([a-z][a-z0-9]*)\b[^>]*>?/gi, '');
+  html = html || ''
+  return html.replace(/<\/?([a-z][a-z0-9]*)\b[^>]*>?/gi, '');
 }
 
 function stripCDATA(html) {
-    return html.replace('<![CDATA[','').replace(']]>','');
+  html = html || ''
+  return html.replace('<![CDATA[','').replace(']]>','');
 }
 
 //parses through a show's RSS data to get content that populates the interface
@@ -28,8 +30,8 @@ function parseAllRSS(rss){
 
 function parseItemRss (item) {
 	var get = function(type) {
-		return item.getElementsByTagName(type)[0].innerHTML;
-	};
+		return $(item.getElementsByTagName(type)[0]).text()
+	}
 
 	var title = get('title');
 	var description = stripCDATA(get('encoded'));
