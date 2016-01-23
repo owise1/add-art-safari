@@ -5,7 +5,7 @@ function init(event) {
     if (evt.name === 'getExhibition'){
       artAdder.localGet('exhibition')
       .then(function (exhibition){
-        evt.target.page.dispatchMessage('exhibition', exhibition.exhibition)
+        evt.target.page.dispatchMessage('exhibition', exhibition)
       })
     }
   }, false);
@@ -14,12 +14,8 @@ function init(event) {
   .then(function () { return artAdder.localGet('exhibition') }) // have we chosen a show?
   .then(function (exhibition) {
     // no
-    if (!exhibition || !exhibition.exhibition) {
-      artAdder.localGet('defaultShowData')
-      .then(function (feeds) {
-        var rand = feeds.defaultShowData[Math.floor(feeds.defaultShowData.length * Math.random())].title
-        artAdder.exhibition(rand)
-      })
+    if (exhibition === 'undefined') { // why does it store it like this?
+      artAdder.chooseMostRecentExhibition()
     } else {
       artAdder.currentExhibition = exhibition
     }
@@ -29,11 +25,18 @@ function init(event) {
 // set default show list from add-art feed
 function syncDefaultList() {
   var d = Q.defer()
-  fetchFeed('http://add-art.org/feed/')
-  .then(function (items) {
-    items = items.filter(function (show) { return show.link !== '' && show.images !== '' })
-    if (items.length > 0) {
-      artAdder.localSet('defaultShowData', items).then(d.resolve)
+  $.ajax({
+    url : 'https://raw.githubusercontent.com/owise1/add-art-exhibitions/master/exhibitions.json',
+    dataType : 'json',
+    success : function (items) {
+      items = items.sort(function (a,b) {
+                     if (a.date > b.date) return -1
+                     if (a.date < b.date) return 1
+                     return 0
+                   })
+      if (items.length > 0) {
+        artAdder.localSet('defaultShowData', items).then(d.resolve)
+      }
     }
   })
   return d.promise

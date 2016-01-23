@@ -1,26 +1,17 @@
-if (typeof chrome !== 'undefined') {
-  var port = chrome.extension.connect({ name : 'popup' })
-}
 
 safari.extension.globalPage.contentWindow.artAdder.localGet('defaultShowData')
 .then(function (object) {
-  insertSources(object['defaultShowData']);
+  insertSources(object);
 })
 
 
 var currentExhibition
 
-var sources = [];
 function insertSources(shows) {
   artAdder.localGet('exhibition')
   .then(function (exhibition) {
-    currentExhibition = exhibition.exhibition
-    for(var i=0; i<shows.length; i++) {
-      sources.push(shows[i]);
-      if(sources.length == shows.length) {
-        buildInterface(sources);
-      }
-    }
+    currentExhibition = exhibition
+    buildInterface(shows)
   })
 }
 
@@ -29,16 +20,17 @@ function buildInterface(sources) {
 	$showTemplate = $('ul#shows li.show');
 	$infoPages = $('#infoPages');
 	$infoPageTemplate = $('#infoPages .infoPage');
+  $('body').addClass('loading')
 
 	for(var i = 0; i < sources.length; i++) {
 		addModules(sources[i],i);
-		if(i!=sources.length-1) {
-		  $shows.append($showTemplate.clone());
-		  $infoPages.append($infoPageTemplate.clone());
-		} else {
-		  $('body').removeClass('loading');
-		}
+    $shows.append($showTemplate.clone());
+    $infoPages.append($infoPageTemplate.clone());
 	}
+  $('#shows li.show:last').remove() // sort of a strange way to do this, so we need to remove the last one
+
+  $('body').removeClass('loading');
+
 
 	$('#close').click(function() {
 		$('header#top #close').removeClass('visible');
@@ -50,6 +42,11 @@ function buildInterface(sources) {
 		$('header#top #close').addClass('visible');
 	  	$('#newSource').addClass('opened');
 	});
+	$('body').on('click', '.selectSource', function(){
+    var selectedSource = $(this).attr('data-show');
+    safari.extension.globalPage.contentWindow.artAdder.exhibition(selectedSource)
+    window.location.reload()
+  });
 
 }
 
@@ -59,7 +56,7 @@ function addModules(show, i) {
 	$square.find('.thumb img').attr('src', show.thumbnail);
   $square.removeClass('active')
 
-  if (currentExhibition && currentExhibition.info.title === show.title) { 
+  if (currentExhibition === show.title) { 
     $square.addClass('active')
   }
 
@@ -78,21 +75,5 @@ function addModules(show, i) {
 
 	$selectBtn = $infoPage.children('.selectSource');
 	$selectBtn.attr('data-show', show.title);
-	$selectBtn.click(event, function (event){
-    var selectedSource = $(event.currentTarget).attr('data-show')
-    var $txt = $(this).find('.add-txt').text('Downloading ...')
-    var interv = false
-    safari.extension.globalPage.contentWindow.artAdder.exhibition(selectedSource, function (progress){
-      $txt.text('Downloading: ' + progress + '% complete')
-      if (interv) clearInterval(interv)
-      if (progress === 100) {
-        window.location.reload()
-      } else {
-        // fake progress
-        interv = setInterval(function (){
-          $txt.text('Downloading: ' + (progress++) + '% complete')
-        }, 500)
-      }
-    })
-  })
 }
+

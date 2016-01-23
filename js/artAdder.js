@@ -53,146 +53,57 @@
       })
       return true
     },
-    // download exhibition and store it
-    exhibition : function (name, onProgress) {
-      var that = artAdder 
-      if (onProgress) {
-        onProgress(10)
-      }
-      artAdder.fetchExhibition(name)
-      .then(function (info) {
-        console.log(info)
-        if (onProgress) {
-          onProgress(35)
-        }
-        zip.workerScriptsPath = 'js/lib/'
-        zip.createReader(new zip.HttpReader(info.images), function(reader) {
-          console.log('here')
-
-          // get all entries from the zip
-          reader.getEntries(function(entries) {
-            if (entries.length) {
-              if (onProgress) {
-                onProgress(85)
-              }
-
-              var imgEntries = entries
-                .filter(function (entry) {
-                  if (/__MACOSX/.test(entry.filename)) return false
-                  if (/DS_Store/.test(entry.filename)) return false
-                  if (/\.zip$/.test(entry.filename)) return false
-                  if (entry.uncompressedSize < 1) return false
-
-                  return true
-                })
-                .map(function (entry) {
-                  var d = Q.defer()
-                  entry.getData(new zip.Data64URIWriter(getExt(entry.filename)), function(uri) {
-                    entry.image = uri 
-                    d.resolve(entry)
-                  })
-                  return d.promise
-                })
-               Q.all(imgEntries)
-               .then(function (entries) {
-                 reader.close(); // close the zip reader
-
-                 var finalEntries = entries.map(function (entry) {
-                   return {
-                     i : entry.filename.match(/images\/([0-9]+)/)[1],
-                     filename : entry.filename,
-                     image : entry.image,
-                     size : entry.filename.match(/images\/[0-9]+artbanner([^.]+)\./)[1]
-                   }
-                 })
-                 var exhibition = {
-                   info : info,
-                   entries : finalEntries
-                 }
-                 that.setExhibition(exhibition)
-                 if (onProgress) {
-                   onProgress(100)
-                 }
-               })
-               .done()
-            }
-          });
-        }, function(error) {
-          // onerror callback
-        });
-      })
+    exhibition : function (name) {
+      return artAdder.setExhibition(name)
     },
-    fetchExhibition : function (name) {
-      var feed = 'http://add-art.org/category/' + name.replace(/ /g, '-') + '/feed/';
-      return fetchFeed(feed)
-      .then(function (items) {
-        return items[0]
+    chooseMostRecentExhibition : function () {
+      return artAdder.localGet('defaultShowData')
+      .then(function (feeds) {
+        var latest = feeds[0].title
+        return artAdder.exhibition(latest)
       })
     },
     currentExhibition : false,
     setExhibition : function (exhibition) {
       artAdder.currentExhibition = Q(exhibition)
+        console.log(exhibition)
       return artAdder.localSet('exhibition', exhibition)
     },
     getExhibition : function () {
       if (artAdder.currentExhibition) return artAdder.currentExhibition
       var d = Q.defer()
       var exhibitionData
-      // this process works differently in chrome and safari
-      // in chrome we have access to a shared data store
-      if (typeof chrome !== 'undefined') {
-        exhibitionData = artAdder.localGet('exhibition')
-      // in safari we need to pass the exhibtion
-      // through messages
-      } else if (typeof safari !== 'undefined') {
-        exhibitionData = (function(){
-          var d2 = Q.defer()
-          var messager = vAPI.messaging.channel('contentscript-end.js');
-          messager.send({
-            what : 'getExhibition'
-          }, function (res) {
-            if (res) d2.resolve(res)
-          })
-          return d2.promise
-        })();
-      }
+      exhibitionData = (function(){
+        var d2 = Q.defer()
+        var messager = vAPI.messaging.channel('contentscript-end.js');
+        messager.send({
+          what : 'getExhibition'
+        }, function (res) {
+          if (res) d2.resolve(res)
+        })
+        return d2.promise
+      })();
 
       exhibitionData 
       .then(function (exhibition) {
         if (!exhibition) {
           d.resolve(false)
         } else {
-          artAdder.currentExhibition = Q(exhibition.exhibition)
-          d.resolve(exhibition.exhibition)
+          artAdder.currentExhibition = Q(exhibition)
+          d.resolve(exhibition)
         }
       })
       return d.promise
     },
     // abstract storage for different browsers
     localSet : function (key, thing) {
-      var d = Q.defer()
-      var save = {}
-      save[key] = thing
-      if (typeof chrome !== 'undefined') {
-        chrome.storage.local.set(save, d.resolve)
-      } else {
-        return localforage.setItem(key, thing)
-      }
-      return d.promise
+      localStorage.setItem(key, JSON.stringify(thing))
+      return Q(thing)
     },
     localGet : function (key) {
-      var d = Q.defer()
-      if (typeof chrome !== 'undefined') {
-        chrome.storage.local.get(key, d.resolve)
-      } else if (typeof localStorage !== 'undefined') {
-        return localforage.getItem(key)
-        .then(function (thing) { // mimic chrome storage
-          var ret = {}
-          ret[key] = thing
-          return ret
-        })
-      }
-      return d.promise
+      var thing = localStorage.getItem(key)
+      if (thing !== 'undefined') thing = JSON.parse(thing) // why does it store a string 'undefined'?
+      return Q(thing)
     },
 
     /*  from original add-art */
