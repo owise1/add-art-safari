@@ -3,10 +3,12 @@ init()
 function init(event) {
   safari.application.addEventListener("message", function (evt){
     if (evt.name === 'getExhibition'){
-      artAdder.localGet('exhibition')
+      artAdder.getExhibitionObj()
       .then(function (exhibition){
         evt.target.page.dispatchMessage('exhibition', exhibition)
       })
+    } else if (evt.name === 'log') {
+      console.log(evt.message)
     }
   }, false);
 

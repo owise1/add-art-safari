@@ -4,54 +4,94 @@
 
   /******************************************************************************/
 
-  function getExt (filename) {
-    return filename.match(/\.(.+)$/)[1].toLowerCase()
+
+  var lastUrl, 
+      currentPieceI;
+  function resetPieceI (){
+    lastUrl = false
+    currentPieceI = -1
   }
+  resetPieceI()
 
-  // returns a random image of said dimensions
-  function getImgSrc(imgList, width, height) {
-    var howMany = imgList.map(function (e) { return e.i }).filter(onlyUnique)
-    var rand = ( Math.floor(howMany.length * Math.random()) + 1 ) + ''
-    return imgList.reduce(function (acc, curr, i) {
-      return curr.size === width + 'x' + height && curr.i === rand  ? curr.image : acc
-    }, {})
+  // rotate through pieces
+  // each webpage shows a single image
+  function getPieceI(currentExhibition) {
+    if (safari.application.activeBrowserWindow.activeTab.url !== lastUrl) {
+      lastUrl = safari.application.activeBrowserWindow.activeTab.url
+      currentPieceI++
+    }
+    if (currentPieceI > currentExhibition.works.length - 1) {
+      currentPieceI = 0
+    }
+    return currentPieceI
   }
-
-  function onlyUnique(value, index, self) { 
-      return self.indexOf(value) === index;
-  }
-
-
+    
+    
 
   var artAdder = {
     processAdNode : function (elem) {
 
-      if (elem.offsetWidth < 2) return
-      if (elem.offsetHeight < 2) return
+        var goodBye = false
+      if (elem.offsetWidth < 2) goodBye = true 
+      if (elem.offsetHeight < 2) goodBye = true 
       if (elem.tagName !== 'IFRAME' 
           && elem.tagName !== 'IMG'
           && elem.tagName !== 'OBJECT'
           && elem.tagName !== 'A'
-          ) return
+          && elem.tagName !== 'INS'
+          ) goodBye = true 
+
+      if ($(elem).data('replaced')) goodBye = true 
+      $(elem).data('replaced', true)
+      if (goodBye) return
 
 
       var that = this
-      artAdder.getExhibition()
+
+      artAdder.currentExhibition // this is set in content-end.js
       .then(function (exhibition) {
-        var bestSize = that.askLink(elem.offsetWidth, elem.offsetHeight)
 
+        var origW = elem.offsetWidth
+        var origH = elem.offsetHeight
+        var piece = exhibition.works[artAdder.pieceI]
+
+        var $wrap = $('<div>').css({
+          width: origW,
+          height: origH,
+          position : 'relative'
+        })
         var art  = document.createElement('a')
-        art.href = exhibition.info.link 
-        art.title = 'Replaced by Add-Art'
-        art.style.width = bestSize[0] + 'px'
-        art.style.height = bestSize[1] + 'px'
+        art.href = piece.link || exhibition.link || 'http://add-art.org' 
+        art.title = piece.title || exhibition.title + ' | replaced by Add-Art'
+        art.style.width = origW + 'px'
+        art.style.height = origH + 'px'
         art.style.display = 'block'
-        art.style.background = "url(" + getImgSrc(exhibition.entries, bestSize[0], bestSize[1])  + ")"
+        art.style.position = 'absolute'
+        art.style.background = "url(" + piece.image + ")"
+        art.style.backgroundSize = "cover"
+        art.style.backgroundPosition = "left " + ['top', 'bottom', 'center'][( Math.floor(Math.random() * 3) )]
+        art.style.backgroundRepeat = "no-repeat"
 
-        elem.parentElement.appendChild(art)
-        elem.parentElement.removeChild(elem)
+        $wrap.append(art)
+        $(elem.parentElement).append($wrap)
+        $(elem).remove()
       })
-      return true
+    },
+    getExhibitionObj : function (){
+      var exhibitions
+      return artAdder.localGet('defaultShowData')
+      .then(function (data){
+        exhibitions = data
+        return artAdder.getExhibition()
+      })
+      .then(function (title){
+        var currentEx = R.find(R.propEq('title', title), exhibitions) 
+        var ret = {
+          exhibition : currentEx, 
+          pieceI : getPieceI(currentEx) 
+        }
+        return ret
+      })
     },
     exhibition : function (name) {
       return artAdder.setExhibition(name)
@@ -66,7 +106,7 @@
     currentExhibition : false,
     setExhibition : function (exhibition) {
       artAdder.currentExhibition = Q(exhibition)
-        console.log(exhibition)
+      resetPieceI()
       return artAdder.localSet('exhibition', exhibition)
     },
     getExhibition : function () {
