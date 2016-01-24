@@ -13,13 +13,13 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2</string>
+	<string>0.3</string>
 	<key>CFBundleVersion</key>
 	<string>1445545773</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
-		<real>104857600</real>
+		<integer>52428800</integer>
 		<key>Global Page</key>
 		<string>background.html</string>
 		<key>Popovers</key>
