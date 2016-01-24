@@ -12,15 +12,18 @@ function init(event) {
     }
   }, false);
 
+  var exhibition
   syncDefaultList()
   .then(function () { return artAdder.localGet('exhibition') }) // have we chosen a show?
-  .then(function (exhibition) {
-    // no
-    if (exhibition === 'undefined') { // why does it store it like this?
+  .then(function (ex) {
+    exhibition = ex
+    return artAdder.localGet('disableAutoUpdate')
+  })
+  .then(function (disableAutoUpdate){
+    // why is it returned as a string 'undefined'?
+    if (exhibition === 'undefined' || !exhibition || disableAutoUpdate !== true) {
       artAdder.chooseMostRecentExhibition()
-    } else {
-      artAdder.currentExhibition = exhibition
-    }
+    } 
   })
 }
 
