@@ -47,9 +47,9 @@ header#top {
 	z-index: 10;
 	background-image: url('images/logo.png');
 	background-repeat: no-repeat;
-    background-position: center; 
-    background-size: auto 30px; 
-    background-color: #138acb;
+  background-position: center; 
+  background-size: auto 30px; 
+  background-color: #ED1C24;
 }
 header#top #addSource {
   display: none; 
@@ -208,7 +208,7 @@ header#top #close.visible {
 	font-weight: bolder;
 	color: white;
 	cursor: pointer;
-	background-color: #138acb;
+  background-color: #ED1C24;
 }
 
 #newSource {

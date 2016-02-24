@@ -15,7 +15,15 @@ $(function (){
       var howMany = 2
       var tried = 0
       ;(function checkIFrames() {
-        $('iframe[id^=google_ads],ins.adsbygoogle,ins[id^=aswift],img[src*=decknetwork]').each(function (){
+        var selectors = [
+          'iframe[id^=google_ads]',
+          'iframe[src*=serving-sys]',
+          'ins.adsbygoogle',
+          'ins.addendum',
+          'ins[id^=aswift]',
+          'img[src*=decknetwork]'
+        ]
+        $(selectors.join(',')).each(function (){
           artAdder.processAdNode(this)
         })
         if (++tried < howMany) {

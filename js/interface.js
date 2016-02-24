@@ -1,24 +1,26 @@
+if (safari) { 
 
-safari.extension.globalPage.contentWindow.artAdder.localGet('defaultShowData')
-.then(function (object) {
-  insertSources(object);
-})
-safari.extension.globalPage.contentWindow.artAdder.localGet('disableAutoUpdate')
-.then(function (res){
-  var keepUpToDate = true
-  if (res === 'undefined'){
-    safari.extension.globalPage.contentWindow.artAdder.localSet('disableAutoUpdate', false)
-  } else {
-    keepUpToDate = !res
-  }
-  $('input[name=autoUpdate]').attr('checked', keepUpToDate)
-})
-
-$(function (){
-  $('body').on('click', 'input[name=autoUpdate]', function (){
-    safari.extension.globalPage.contentWindow.artAdder.localSet('disableAutoUpdate', !$(this).is(':checked'))
+  safari.extension.globalPage.contentWindow.artAdder.localGet('defaultShowData')
+  .then(function (object) {
+    insertSources(object);
   })
-})
+  safari.extension.globalPage.contentWindow.artAdder.localGet('disableAutoUpdate')
+  .then(function (res){
+    var keepUpToDate = true
+    if (res === 'undefined'){
+      safari.extension.globalPage.contentWindow.artAdder.localSet('disableAutoUpdate', false)
+    } else {
+      keepUpToDate = !res
+    }
+    $('input[name=autoUpdate]').attr('checked', keepUpToDate)
+  })
+
+  $(function (){
+    $('body').on('click', 'input[name=autoUpdate]', function (){
+      safari.extension.globalPage.contentWindow.artAdder.localSet('disableAutoUpdate', !$(this).is(':checked'))
+    })
+  })
+}
 
 
 var currentExhibition

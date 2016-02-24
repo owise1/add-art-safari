@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>@owise1</string>
 	<key>Builder Version</key>
-	<string>11601.3.9</string>
+	<string>11601.4.4</string>
 	<key>CFBundleDisplayName</key>
 	<string>Add-Art</string>
 	<key>CFBundleIdentifier</key>
@@ -61,6 +61,11 @@
 				<string>js/artAdder.js</string>
 				<string>js/content-end.js</string>
 			</array>
+			<key>Start</key>
+			<array>
+				<string>js/lib/jquery-1.11.2.min.js</string>
+				<string>js/content-start.js</string>
+			</array>
 		</dict>
 		<key>Whitelist</key>
 		<array>
@@ -71,7 +76,7 @@
 	<key>Description</key>
 	<string>Replacing ads with art.</string>
 	<key>DeveloperIdentifier</key>
-	<string>7Q6H682NNR</string>
+	<string>0000000000</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
