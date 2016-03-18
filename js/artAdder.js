@@ -26,7 +26,6 @@
     return currentPieceI
   }
     
-    
 
   var artAdder = {
     processAdNode : function (elem) {
@@ -79,10 +78,10 @@
     },
     getExhibitionObj : function (){
       var exhibitions
-      return artAdder.localGet('defaultShowData')
+      return artAdder.getAllExhibitions()
       .then(function (data){
         exhibitions = data
-        return artAdder.getExhibition()
+        return artAdder.localGet('exhibition')
       })
       .then(function (title){
         var currentEx = R.find(R.propEq('title', title), exhibitions) 
@@ -111,29 +110,7 @@
     },
     getExhibition : function () {
       if (artAdder.currentExhibition) return artAdder.currentExhibition
-      var d = Q.defer()
-      var exhibitionData
-      exhibitionData = (function(){
-        var d2 = Q.defer()
-        var messager = vAPI.messaging.channel('contentscript-end.js');
-        messager.send({
-          what : 'getExhibition'
-        }, function (res) {
-          if (res) d2.resolve(res)
-        })
-        return d2.promise
-      })();
-
-      exhibitionData 
-      .then(function (exhibition) {
-        if (!exhibition) {
-          d.resolve(false)
-        } else {
-          artAdder.currentExhibition = Q(exhibition)
-          d.resolve(exhibition)
-        }
-      })
-      return d.promise
+      return Q(false)
     },
     // abstract storage for different browsers
     localSet : function (key, thing) {
@@ -145,6 +122,58 @@
       if (thing !== 'undefined') thing = JSON.parse(thing) // why does it store a string 'undefined'?
       return Q(thing)
     },
+    getCustomExhibitions : function (){
+      var d = Q.defer()
+      artAdder.localGet('customExhibitions')
+      .then( function (ce){
+        var customExhibitions = ce || []
+        d.resolve(customExhibitions.filter(function (e){ return e  })) // get rid of blanks 
+      })
+      return d.promise
+
+    },
+    getAllExhibitions : function () {
+      var d = Q.defer()
+      var exhibs = []
+      artAdder.localGet('defaultShowData')
+      .then(function (defaultShows){
+        exhibs = R.map(artAdder.addPropToObj('addendum', true), exhibs.concat(defaultShows))
+        return artAdder.getCustomExhibitions()
+      })
+      .then(function (customExhibitions){
+        d.resolve(exhibs.concat(customExhibitions).sort(artAdder.exhibitionsSort)) 
+      })
+      .done()
+      return d.promise
+    },
+    addExhibition : function (customExhibition){
+      return artAdder.getCustomExhibitions()
+      .then( function (customExhibitions){
+        customExhibitions.push(customExhibition)
+        customExhibitions = R.uniq(customExhibitions)
+        return artAdder.localSet('customExhibitions', customExhibitions)
+      })
+    },
+    formatDate : function (t){
+      var d = new Date(t)
+      return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear()
+    },
+    verifyExhibition : function (exhib){
+      return ['artist','description','title','thumbnail','works'].reduce(function (prev, curr){
+        if (!prev) return prev 
+        return exhib[curr] !== undefined
+      }, true)
+    },
+    exhibitionsSort : function (a,b) {
+      if (a.date > b.date) return -1
+      if (a.date < b.date) return 1
+      return 0
+    },
+    addPropToObj : R.curry(function (prop, fn){
+      return function (obj) {
+        return R.set(R.lensProp(prop), typeof fn === 'function' ? fn(obj) : fn, R.clone(obj))
+      }
+    }),
 
     /*  from original add-art */
     loadImgArray : function() {

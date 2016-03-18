@@ -1,14 +1,14 @@
 if (safari) { 
+  var addArt = safari.extension.globalPage.contentWindow.artAdder
 
-  safari.extension.globalPage.contentWindow.artAdder.localGet('defaultShowData')
-  .then(function (object) {
-    insertSources(object);
-  })
-  safari.extension.globalPage.contentWindow.artAdder.localGet('disableAutoUpdate')
+  artAdder.getAllExhibitions()
+  .then(insertSources)
+
+  artAdder.localGet('disableAutoUpdate')
   .then(function (res){
     var keepUpToDate = true
     if (res === 'undefined'){
-      safari.extension.globalPage.contentWindow.artAdder.localSet('disableAutoUpdate', false)
+      artAdder.localSet('disableAutoUpdate', false)
     } else {
       keepUpToDate = !res
     }
@@ -17,7 +17,7 @@ if (safari) {
 
   $(function (){
     $('body').on('click', 'input[name=autoUpdate]', function (){
-      safari.extension.globalPage.contentWindow.artAdder.localSet('disableAutoUpdate', !$(this).is(':checked'))
+      artAdder.localSet('disableAutoUpdate', !$(this).is(':checked'))
     })
   })
 }
@@ -60,22 +60,52 @@ function buildInterface(sources) {
 		$('header#top #close').addClass('visible');
 	  	$('#newSource').addClass('opened');
 	});
-	$('body').on('click', '.selectSource', function(){
-    var selectedSource = $(this).attr('data-show');
-    safari.extension.globalPage.contentWindow.artAdder.exhibition(selectedSource)
-    window.location.reload()
-  });
+	$('body')
+    .on('click', '.selectSource', function(){
+      var selectedSource = $(this).attr('data-show');
+      artAdder.exhibition(selectedSource)
+      window.location.reload()
+    })
+    .on('click', '#addNewSource', function (){
+      var url = $('#newSource input[type="text"]').val()
+      function nope() {
+        $('#newSource .errors').text('Sorry. That one didn\'t work.')
+      }
+      if (url !== '') {
+        $('#newSource .errors').text('One sec...')
+        $.ajax({
+          dataType : 'json',
+          url : url,
+          success : function (res) {
+            if (artAdder.verifyExhibition(res)) {
+              artAdder.addExhibition(res)
+              .then(window.location.reload)
+
+            } else {
+              nope()
+            }
+          },
+          error : nope
+        })
+      }
+    })
 
 }
 
+var addendumI = 1
 function addModules(show, i) {
 	var $square = $('ul#shows li.show').eq(i);
 	$square.attr('data-title', show.title);
 	$square.find('.thumb img').attr('src', show.thumbnail);
+	$square.find('.thumb .short-title').text(show.title);
   $square.removeClass('active')
 
   if (currentExhibition === show.title) { 
     $square.addClass('active')
+  }
+  if (show.addendum) {
+    $square.addClass('addendum')
+    $square.find('.thumb .short-title').text('Addendum #' + addendumI++);
   }
 
 	$square.click(function() {
@@ -87,7 +117,7 @@ function addModules(show, i) {
 	var $infoPage = $('.infoPage').eq(i);
 	$infoPage.attr('data-title', show.title);
 	$infoPage.find('h1.title').html(show.title);
-	$infoPage.find('.date').html('Last updated on '+ show.date );
+	$infoPage.find('.date').html('Last updated on '+ artAdder.formatDate(show.date));
 	$infoPage.find('.description').html(show.description);
 	$infoPage.find('.link a').attr('href', show.link);
 
