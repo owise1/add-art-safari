@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>@owise1</string>
 	<key>Builder Version</key>
-	<string>11601.4.4</string>
+	<string>11601.5.17.1</string>
 	<key>CFBundleDisplayName</key>
 	<string>Add-Art</string>
 	<key>CFBundleIdentifier</key>
@@ -76,7 +76,7 @@
 	<key>Description</key>
 	<string>Replacing ads with art.</string>
 	<key>DeveloperIdentifier</key>
-	<string>0000000000</string>
+	<string>7Q6H682NNR</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>

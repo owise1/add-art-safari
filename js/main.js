@@ -30,6 +30,12 @@ function init(event) {
     if (exhibition === 'undefined' || !exhibition || disableAutoUpdate !== true) {
       artAdder.chooseMostRecentExhibition()
     } 
+    // feels like the first time
+    console.log(exhibition)
+    if (exhibition === 'undefined' || !exhibition) {
+      safari.application.activeBrowserWindow.openTab().url = 'http://add-art.org/update'
+        console.log('here')
+    }
   }).done()
 }
 
