@@ -15,7 +15,7 @@ $(function (){
       var howMany = 2
       var tried = 0
       ;(function checkIFrames() {
-        var selectors = [
+        var selectors = evt.message.selectors || [
           'iframe[id^=google_ads]',
           'iframe[src*=serving-sys]',
           'ins.adsbygoogle',
@@ -32,5 +32,4 @@ $(function (){
       })()
     }
   }, false);
-
 })

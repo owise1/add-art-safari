@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>@owise1</string>
 	<key>Builder Version</key>
-	<string>11601.5.17.1</string>
+	<string>11601.6.14</string>
 	<key>CFBundleDisplayName</key>
 	<string>Add-Art</string>
 	<key>CFBundleIdentifier</key>
@@ -60,11 +60,6 @@
 				<string>js/lib/ramda.min.js</string>
 				<string>js/artAdder.js</string>
 				<string>js/content-end.js</string>
-			</array>
-			<key>Start</key>
-			<array>
-				<string>js/lib/jquery-1.11.2.min.js</string>
-				<string>js/content-start.js</string>
 			</array>
 		</dict>
 		<key>Whitelist</key>

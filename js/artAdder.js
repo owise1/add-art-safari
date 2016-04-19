@@ -25,23 +25,22 @@
     }
     return currentPieceI
   }
-    
 
   var artAdder = {
     processAdNode : function (elem) {
 
         var goodBye = false
-      if (elem.offsetWidth < 2) goodBye = true 
-      if (elem.offsetHeight < 2) goodBye = true 
+      if (elem.offsetWidth < 2) goodBye = true
+      if (elem.offsetHeight < 2) goodBye = true
       if (elem.tagName !== 'IFRAME' 
           && elem.tagName !== 'IMG'
           && elem.tagName !== 'OBJECT'
           && elem.tagName !== 'A'
           && elem.tagName !== 'INS'
-          ) goodBye = true 
+          ) goodBye = true
 
-      if ($(elem).data('replaced')) goodBye = true 
-      $(elem).data('replaced', true)
+      if ($(elem).data('replaced')) goodBye = true
+      $(elem).data('replaced', true).parent().data('replaced', true)
       if (goodBye) return
 
 
@@ -62,6 +61,7 @@
         var art  = document.createElement('a')
         art.href = piece.link || exhibition.link || 'http://add-art.org' 
         art.title = piece.title || exhibition.title + ' | replaced by Add-Art'
+        art.target = '_blank'
         art.style.width = origW + 'px'
         art.style.height = origH + 'px'
         art.style.display = 'block'
@@ -155,8 +155,13 @@
       })
     },
     formatDate : function (t){
-      var d = new Date(t)
-      return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear()
+      var dateObj = new Date(parseInt(t))
+      var months = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+      var day = dateObj.getDate()
+      var month = months[dateObj.getMonth()]
+      var year = dateObj.getUTCFullYear()
+      var date = month + ' ' + day + ', ' + year
+      return date
     },
     verifyExhibition : function (exhib){
       return ['artist','description','title','thumbnail','works'].reduce(function (prev, curr){

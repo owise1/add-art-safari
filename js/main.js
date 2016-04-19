@@ -1,10 +1,13 @@
 init()
 
 function init(event) {
+  var exhibition, disableAutoUpdate,selectors
+
   safari.application.addEventListener("message", function (evt){
     if (evt.name === 'getExhibition'){
       artAdder.getExhibitionObj()
       .then(function (exhibition){
+        exhibition.selectors = selectors
         evt.target.page.dispatchMessage('exhibition', exhibition)
       })
     } else if (evt.name === 'log') {
@@ -12,7 +15,6 @@ function init(event) {
     }
   }, false);
 
-  var exhibition, disableAutoUpdate
   syncDefaultList()
   .then(function () { return artAdder.localGet('exhibition') }) // have we chosen a show?
   .then(function (ex) {
@@ -29,14 +31,28 @@ function init(event) {
     // why is it returned as a string 'undefined'?
     if (exhibition === 'undefined' || !exhibition || disableAutoUpdate !== true) {
       artAdder.chooseMostRecentExhibition()
-    } 
+    }
     // feels like the first time
-    console.log(exhibition)
     if (exhibition === 'undefined' || !exhibition) {
       safari.application.activeBrowserWindow.openTab().url = 'http://add-art.org/update'
         console.log('here')
     }
   }).done()
+
+  $.ajax({
+    url : 'https://easylist-downloads.adblockplus.org/easylist.txt',
+    type : 'get',
+    success : function (txt){
+      selectors = txt.split("\n")
+            .reverse()
+            .filter(function name(line) {
+              return /^##/.test(line)
+            })
+            .map(function (line) {
+              return line.replace(/^##/, '')
+            })
+    }
+  })
 }
 
 // set default show list from add-art feed
