@@ -24,6 +24,7 @@ if (safari) {
 
 
 var currentExhibition
+var totalAddendums = 0;
 
 function insertSources(shows) {
   artAdder.localGet('exhibition')
@@ -39,6 +40,7 @@ function buildInterface(sources) {
 	$infoPages = $('#infoPages');
 	$infoPageTemplate = $('#infoPages .infoPage');
   $('body').addClass('loading')
+  totalAddendums = sources.filter(R.prop('addendum')).length
 
 	for(var i = 0; i < sources.length; i++) {
 		addModules(sources[i],i);
@@ -92,7 +94,7 @@ function buildInterface(sources) {
 
 }
 
-var addendumI = 1
+var addendumI = 0
 function addModules(show, i) {
 	var $square = $('ul#shows li.show').eq(i);
   var description = show.description
@@ -106,7 +108,8 @@ function addModules(show, i) {
   }
   if (show.addendum) {
     $square.addClass('addendum')
-    $square.find('.thumb .short-title').text('Addendum #' + addendumI++);
+    $square.find('.thumb .short-title').text('Addendum #' + (totalAddendums - addendumI))
+    addendumI++
   } else if (show.url) {
     description += "\n\nEssay URL:\n" + show.url
   }

@@ -66,6 +66,9 @@ function syncDefaultList() {
       if (items.length > 0) {
         artAdder.localSet('defaultShowData', items).then(d.resolve)
       }
+    },
+    error : function (err){
+      console.log(err);
     }
   })
   return d.promise
