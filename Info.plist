@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>@owise1</string>
 	<key>Builder Version</key>
-	<string>11601.7.1</string>
+	<string>12602.2.14.0.7</string>
 	<key>CFBundleDisplayName</key>
 	<string>Add-Art</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3</string>
+	<string>0.4</string>
 	<key>CFBundleVersion</key>
 	<string>1445545773</string>
 	<key>Chrome</key>

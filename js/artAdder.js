@@ -33,6 +33,34 @@
   }
 
   var artAdder = {
+    getCurrentHost : function (){
+      return Q(R.pipe(
+        R.replace(/https?:\/\//, ''),
+        R.split('/'),
+        R.nth(0),
+        R.replace(/www\./, ''))(safari.application.activeBrowserWindow.activeTab.url))
+    },
+    isCurrentHostBlocked : function (){
+      return Q.all([artAdder.getCurrentHost(),artAdder.getBlockedSites()]).then(R.apply(R.contains))
+    },
+    getBlockedSites : function (){
+      return artAdder.localGet('blockedSites')
+        .then(function (obj){
+          return obj || []
+        })
+    },
+    toggleSiteBlock : function (host){
+      return artAdder.getBlockedSites()
+        .then(function (blockedSites){
+          if (R.contains(host, blockedSites)) {
+            blockedSites = R.filter(R.pipe(R.equals(host),R.not), blockedSites)
+            
+          } else {
+            blockedSites.push(host)
+          }
+          return artAdder.localSet('blockedSites', blockedSites)
+        })
+    },
     processAdNode : function (elem) {
 
         var goodBye = false
@@ -83,17 +111,21 @@
       })
     },
     getExhibitionObj : function (){
-      var exhibitions
+      var exhibitions,siteBlocked,currentEx
       return artAdder.getAllExhibitions()
       .then(function (data){
         exhibitions = data
         return artAdder.localGet('exhibition')
       })
       .then(function (title){
-        var currentEx = R.find(R.propEq('title', title), exhibitions) 
+        currentEx = R.find(R.propEq('title', title), exhibitions) 
+        return artAdder.isCurrentHostBlocked()
+      })
+      .then(function (blocked){
         var ret = {
           exhibition : currentEx, 
-          pieceI : getPieceI(currentEx) 
+          pieceI : getPieceI(currentEx),
+          siteBlocked : blocked
         }
         return ret
       })

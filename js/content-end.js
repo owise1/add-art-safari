@@ -9,6 +9,8 @@ $(function (){
   safari.self.tab.dispatchMessage('getExhibition')
   safari.self.addEventListener('message', function (evt){
     if (evt.name === 'exhibition' && evt.message) {
+      if (evt.message.siteBlocked) return
+
       artAdder.currentExhibition = Q(evt.message.exhibition)
       artAdder.pieceI = evt.message.pieceI
 

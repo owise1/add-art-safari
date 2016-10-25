@@ -20,6 +20,27 @@ if (safari) {
       artAdder.localSet('disableAutoUpdate', !$(this).is(':checked'))
     })
   })
+
+  function checkCheck(){
+    var host
+    return artAdder.getCurrentHost()
+      .then(function (h){
+        host = h
+        return artAdder.getBlockedSites()
+      })
+      .then(function (blockedSites){
+        var blocked = R.contains(host, blockedSites)
+        if (blocked) {
+          $('#check').addClass('off').attr('title', 'Click to enable add-art on ' + host)
+        } else {
+          $('#check').removeClass('off').attr('title', 'Click to disable add-art on ' + host)
+        }
+        return blocked
+      })
+  }
+  safari.application.addEventListener('popover', function (evt){
+    checkCheck()
+  }, true)
 }
 
 
@@ -67,6 +88,11 @@ function buildInterface(sources) {
       var selectedSource = $(this).attr('data-show');
       artAdder.exhibition(selectedSource)
       window.location.reload()
+    })
+    .on('click', '#check', function (){
+      artAdder.getCurrentHost()
+        .then(artAdder.toggleSiteBlock)
+        .then(checkCheck)
     })
     .on('click', '#addNewSource', function (){
       var url = $('#newSource input[type="text"]').val()
